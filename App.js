@@ -1,19 +1,35 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  FlatList,
+} from "react-native";
 
 export default function App() {
   const [item, setItem] = useState("");
+  const [task, setTask] = useState([]);
+
   function handleAddItem() {
-    console.log(item);
+    const newItem = item.trim();
+
+    if (newItem === "") return;
+
+    setTask([...task, newItem]);
     setItem("");
   }
+
   function handleInputText(text) {
     setItem(text);
   }
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
+
       <View style={styles.inputContainer}>
         <TextInput
           value={item}
@@ -21,10 +37,19 @@ export default function App() {
           style={styles.input}
           placeholder="PROJEKT PMA"
         />
+
         <Button title="ADD" onPress={handleAddItem} />
       </View>
+
       <View style={styles.udalosti}>
-        <Text>UDALOST</Text>
+        <FlatList
+          data={task}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <Text style={styles.taskItem}>({item})</Text>
+          )}
+          ListEmptyComponent={<Text>Zatiaľ žiadne udalosti.</Text>}
+        />
       </View>
     </View>
   );
@@ -33,6 +58,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 2,
+    borderWidth: 3,
   },
   inputContainer: {
     flex: 1,
@@ -51,5 +78,10 @@ const styles = StyleSheet.create({
     flex: 2,
     backgroundColor: "white",
     padding: 10,
+  },
+  taskItem: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "gray",
   },
 });
