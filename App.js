@@ -9,6 +9,8 @@ import {
   FlatList,
 } from "react-native";
 
+import Item from "./src/components/items";
+
 export default function App() {
   const [item, setItem] = useState("");
   const [task, setTask] = useState([]);
@@ -18,12 +20,12 @@ export default function App() {
 
     if (newItem === "") return;
 
-    setTask([...task, newItem]);
-    setItem("");
-  }
+    setTask((currentTasks) => [
+      ...currentTasks,
+      { id: Date.now().toString(), title: newItem },
+    ]);
 
-  function handleInputText(text) {
-    setItem(text);
+    setItem("");
   }
 
   return (
@@ -33,7 +35,7 @@ export default function App() {
       <View style={styles.inputContainer}>
         <TextInput
           value={item}
-          onChangeText={handleInputText}
+          onChangeText={setItem}
           style={styles.input}
           placeholder="PROJEKT PMA"
         />
@@ -44,10 +46,8 @@ export default function App() {
       <View style={styles.udalosti}>
         <FlatList
           data={task}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Text style={styles.taskItem}>({item})</Text>
-          )}
+          keyExtractor={(taskItem) => taskItem.id}
+          renderItem={({ item }) => <Item title={item.title} />}
           ListEmptyComponent={<Text>Zatiaľ žiadne udalosti.</Text>}
         />
       </View>
@@ -58,8 +58,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 2,
-    borderWidth: 3,
   },
   inputContainer: {
     flex: 1,
@@ -78,10 +76,5 @@ const styles = StyleSheet.create({
     flex: 2,
     backgroundColor: "white",
     padding: 10,
-  },
-  taskItem: {
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "gray",
   },
 });
